@@ -5,8 +5,10 @@ function posEE = computeEEposition()
 
 global qs; 
 
+%% Find the positions of each of the joints using FK 
 [X,~] = updateQ(qs); 
 
-posEE = X(3,:);
+%% Return the position of the end effector 
+posEE = X(4,:);
 
 end
