@@ -26,19 +26,18 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Create static objects and interactive objects in their initial state
 
-% Create a flat box with the base of the robot situated at 0,0,0. 
+% Example of a flat plane
 
 side = 200; 
-P1 = [-s/2, 0, s];
-P2 = [s/2, 0, s]; 
-P3 = [s/2, s, s];
-P4 = [-s/2, s, s];
-P5 = [-s/2, 0, 0];
-P6 = [s/2, 0, 0];
-P7 = [s/2, s, 0];
-P8 = [-s/2, s, 0];
 
-% Example of a flat plane
+P1 = (0, 0, 0)
+P2 = (2, 0, 0)
+P3(2, 4, 0)
+P4(0, 4, 0)
+P5(0, 0, 3)
+P6(2, 0, 3)
+P7(2, 4, 3)
+P8(0, 4, 3)
 
 hFloor = fill3([200 200 200 200], [-300 -300 300 300], [-300 300 300 -300], [0.7 0 0], 'facealpha', 0.3);
 

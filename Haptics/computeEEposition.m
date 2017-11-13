@@ -3,7 +3,10 @@
 % Fill in the necessary inputs
 function posEE = computeEEposition()
 
-% Fill this in
-posEE = [0;0;0];
+global qs; 
+
+[X,~] = updateQ(qs); 
+
+posEE = X(3,:);
 
 end
