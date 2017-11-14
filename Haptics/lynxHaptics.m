@@ -78,16 +78,13 @@ surf(Z*height+xBase,Y+yBase,X+zBase,'FaceColor','red');
 
 %Create a circular button head 
 theta=-pi:0.01:pi;
-x=xBase + height + zeros(1,numel(x)); 
-y=yBase + radCylinder*sin(theta);
 z=zBase + radCylinder*cos(theta);
+x=xBase + height + zeros(1,numel(z)); 
+y=yBase + radCylinder*sin(theta);
 patch(x,y,z,'red');
 
-% rectangle('Position',[yBase,zBase,50,50],...
-%   'Curvature',[1,1], 'FaceColor','r')
-% axis square;
+%% Create a sphere 
 
-%% 
 % Example of a flat plane
 %hFloor = fill3([200 200 200 200], [-300 -300 300 300], [-300 300 300 -300], [0.7 0 0], 'facealpha', 0.3);
 
