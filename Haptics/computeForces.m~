@@ -32,12 +32,10 @@ FflatWall = -kWall * (posEE - x0Wall);
 textureWall = (y >= s/2); 
 % find the normal force
 x0WallTexture = [x s/2 z]; 
-FNormalTexture = abs(-kWall * (posEE - x0WallTexture));
+FNormal = abs(-kWall * (posEE - x0WallTexture));
 % Vary the constant with position 
-% ////// Currently trying to figure how to change texture with position
-cTexture = sin(norm(x+z)); 
-% Find the force of the textured wall 
-Ftexture = - cTexture * cross(FNormalTexture,velocity); 
+cTexture = 2; 
+Ftexture = ; 
 
 %% Viscous wall 
 % left wall 
@@ -45,10 +43,10 @@ Ftexture = - cTexture * cross(FNormalTexture,velocity);
 viscousWall = (y <= -s/2); 
 % find the normal force 
 x0WallViscous = [x -s/2 z];
-FNormalViscous = abs(-kWall * (posEE - x0WallViscous)); 
+FNormal = abs(-kWall * (posEE - x0WallViscous)); 
 % find the F of viscous; 
 cViscous = 32; 
-Fviscous = - cViscous * cross(FNormalViscous,velocity); 
+Fviscous = - cViscous * cross(FNormal,velocity); 
 
 %% Button 
 % top right of back wall 
@@ -64,7 +62,7 @@ switch (posEE)
     case springWall
         F = FflatWall;
     case textureWall 
-        F = Ftexture; 
+        F =
     case viscousWall
         F = Fviscous; 
     otherwise %freespace 

@@ -29,15 +29,24 @@ end
 %% Create a flat box with the base of the robot situated at 0,0,0
 
 % define a length of the size of the cube 
-s = 1000; 
+global s; 
+s = 300; %if doesnt work do 1000
 % define the points on our cube 
+global p1;
 p1 = [0,-s/2, s];
+global p2 
 p2 = [0,s/2, s]; 
+global p3;
 p3 = [s, s/2, s];
+global p4;
 p4 = [s,-s/2, s];
+global p5;
 p5 = [0,-s/2, 0];
+global p6;
 p6 = [0,s/2, 0];
+global p7;
 p7 = [s,s/2, 0];
+global p8;
 p8 = [s,-s/2, 0];
 
 %Back wall  
@@ -72,11 +81,11 @@ xlabel('x'); ylabel('y'); zlabel('z');
 
 %% Create button on the back wall 
 %Create the cylinder 
-radCylinder = 100; 
+radCylinder = s/10; 
 xBase = 0; 
 yBase = s/4; 
 zBase = 3*s/4; 
-height = 100; 
+height = s/8; 
 [X,Y,Z] = cylinder(radCylinder);
 surf(Z*height+xBase,Y+yBase,X+zBase,'FaceColor','red'); 
 hold on; 
@@ -90,7 +99,7 @@ patch(x,y,z,'red');
 hold on; 
 
 %% Create a sphere
-radSphere = 100; 
+radSphere = s/10; 
 x0 = s/2; 
 y0 = 2*s/5; 
 z0 = 2*s/5; 
@@ -103,10 +112,10 @@ hold on;
 xPoint = 0; 
 yPoint = -s/4; 
 zPoint = 3*s/4; 
-scatter3(xPoint,yPoint,zPoint, 500,'black');
+scatter3(xPoint,yPoint,zPoint, s/15,'black');
 hold on; 
 
-radSphereBlack = 100; 
+radSphereBlack = s/10; 
 x0Black = 0; 
 y0Black = -s/4; 
 z0Black = 3*s/4; 
@@ -119,11 +128,20 @@ hold off;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % set camera properties
-axis([-1000 1000 -1000 1000 -1000 1000]);
+axis([-s s -s*1 s*1 -s*1 s*1]);
 view([75,30]);
 
 i = 0; frameSkip = 3; % plotting variable - set how often plot updates
+
+% define currPos and a prevSmoothVelocity so that we can find the velocity 
+currPos = 0; 
+prevSmoothVelocity = 0; 
+
+%% Star the control loop 
 while(1)
+    %% start a timer to measure the control loop 
+    tic; 
+    
     %% Read potentiometer values, convert to angles and end effector location
     if hardwareFlag
         qs = lynxGetAngles();
@@ -131,13 +149,25 @@ while(1)
     
     %% Calculate current end effector position
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    posEE = computeEEposition();
+    currPos = computeEEposition();
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    %% Calculate the velocity using exponential moving average 
+    distance = norm(currPos - posEE); 
+    weight = 0.90; 
+    currentRawVelocity = distance/toc;
+    velocity = weight * currentRawVelocity + (1-weight) * prevSmoothVelocity; 
+    
+    % set the global pos of the EE to the current position 
+    posEE = currPos; 
+    
+    % set the previous smooth velocity of the current velocity 
+    prevSmoothVelocity = velocity; 
     
     %% Calculate desired force based on current end effector position
     % Check for collisions with objects in the environment and compute the total force on the end effector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    F = computeForces();
+    F = computeForces(posEE,velocity);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %% Plot Environment
