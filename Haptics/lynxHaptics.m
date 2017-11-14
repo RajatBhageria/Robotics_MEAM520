@@ -26,11 +26,10 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Create static objects and interactive objects in their initial state
 
-% Create a flat box with the base of the robot situated at 0,0,0. 
+%% Create a flat box with the base of the robot situated at 0,0,0
 
 % define a length of the size of the cube 
 s = 1000; 
-
 % define the points on our cube 
 p1 = [0,-s/2, s];
 p2 = [0,s/2, s]; 
@@ -45,28 +44,50 @@ p8 = [s,-s/2, 0];
 xBackWall = [p1(1) p2(1) p6(1) p5(1)];
 yBackWall = [p1(2) p2(2) p6(2) p5(2)];
 zBackWall = [p1(3) p2(3) p6(3) p5(3)];
-fill3(xBackWall, yBackWall, zBackWall, 1);
+fill3(xBackWall, yBackWall, zBackWall, 'g');
 
 %Left wall 
 xLeftWall = [p1(1) p5(1) p8(1) p4(1)];
 yLeftWall = [p1(2) p5(2) p8(2) p4(2)];
 zLeftWall = [p1(3) p5(3) p8(3) p4(3)];
-fill3(xLeftWall, yLeftWall, zLeftWall, 2);
+fill3(xLeftWall, yLeftWall, zLeftWall, 'b');
 
 %Right Wall 
 xRightWall = [p2(1) p3(1) p7(1) p6(1)];
 yRightWall = [p2(2) p3(2) p7(2) p6(2)];
 zRightWall = [p2(3) p3(3) p7(3) p6(3)];
-fill3(xRightWall, yRightWall, zRightWall, 3);
+fill3(xRightWall, yRightWall, zRightWall, 'o');
 
 %Floor  
 xFloor = [p5(1) p6(1) p7(1) p8(1)];
 yFloor = [p5(2) p6(2) p7(2) p8(2)];
 zFloor = [p5(3) p6(3) p7(3) p8(3)];
-fill3(xFloor, yFloor, zFloor, 4);
+fill3(xFloor, yFloor, zFloor, 'y');
 
-%
+xlabel('x'); ylabel('y'); zlabel('z');  
 
+%% Create button on the back wall 
+%Create the cylinder 
+radCylinder = 100; 
+xBase = 0; 
+yBase = s/4; 
+zBase = 3*s/4; 
+height = 100; 
+[X,Y,Z] = cylinder(radCylinder);
+surf(Z*height+xBase,Y+yBase,X+zBase,'FaceColor','red'); 
+
+%Create a circular button head 
+theta=-pi:0.01:pi;
+x=xBase + height + zeros(1,numel(x)); 
+y=yBase + radCylinder*sin(theta);
+z=zBase + radCylinder*cos(theta);
+patch(x,y,z,'red');
+
+% rectangle('Position',[yBase,zBase,50,50],...
+%   'Curvature',[1,1], 'FaceColor','r')
+% axis square;
+
+%% 
 % Example of a flat plane
 %hFloor = fill3([200 200 200 200], [-300 -300 300 300], [-300 300 300 -300], [0.7 0 0], 'facealpha', 0.3);
 
