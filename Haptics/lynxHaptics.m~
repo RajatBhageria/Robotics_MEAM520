@@ -45,28 +45,24 @@ xBackWall = [p1(1) p2(1) p6(1) p5(1)];
 yBackWall = [p1(2) p2(2) p6(2) p5(2)];
 zBackWall = [p1(3) p2(3) p6(3) p5(3)];
 fill3(xBackWall, yBackWall, zBackWall, 'g');
-hold on; 
 
 %Left wall 
 xLeftWall = [p1(1) p5(1) p8(1) p4(1)];
 yLeftWall = [p1(2) p5(2) p8(2) p4(2)];
 zLeftWall = [p1(3) p5(3) p8(3) p4(3)];
 fill3(xLeftWall, yLeftWall, zLeftWall, 'b');
-hold on; 
 
 %Right Wall 
 xRightWall = [p2(1) p3(1) p7(1) p6(1)];
 yRightWall = [p2(2) p3(2) p7(2) p6(2)];
 zRightWall = [p2(3) p3(3) p7(3) p6(3)];
 fill3(xRightWall, yRightWall, zRightWall, 'o');
-hold on; 
 
 %Floor  
 xFloor = [p5(1) p6(1) p7(1) p8(1)];
 yFloor = [p5(2) p6(2) p7(2) p8(2)];
 zFloor = [p5(3) p6(3) p7(3) p8(3)];
 fill3(xFloor, yFloor, zFloor, 'y');
-hold on; 
 
 xlabel('x'); ylabel('y'); zlabel('z');  
 
@@ -79,7 +75,6 @@ zBase = 3*s/4;
 height = 100; 
 [X,Y,Z] = cylinder(radCylinder);
 surf(Z*height+xBase,Y+yBase,X+zBase,'FaceColor','red'); 
-hold on; 
 
 %Create a circular button head 
 theta=-pi:0.01:pi;
@@ -87,7 +82,6 @@ z=zBase + radCylinder*cos(theta);
 x=xBase + height + zeros(1,numel(z)); 
 y=yBase + radCylinder*sin(theta);
 patch(x,y,z,'red');
-hold on; 
 
 %% Create a sphere
 radSphere = 100; 
@@ -96,26 +90,25 @@ y0 = 2*s/5;
 z0 = 2*s/5; 
 [xSphere,ySphere,zSphere] = sphere(radSphere); 
 surf(xSphere*radSphere+x0,ySphere*radSphere+y0,zSphere*radSphere+z0,'FaceColor','m');
-hold on; 
 
 %% Black hole 
 % make the point 
 xPoint = 0; 
 yPoint = -s/4; 
 zPoint = 3*s/4; 
-scatter3(xPoint,yPoint,zPoint, 500,'black');
-hold on; 
+scatter3(xPoint,yPoint,zPoint, 500,'b.');
 
 radSphereBlack = 100; 
 x0Black = 0; 
 y0Black = -s/4; 
 z0Black = 3*s/4; 
 [xSphereBlk,ySphereBlk,zSphereBlk] = sphere(radSphere); 
-surf(xSphereBlk*radSphereBlack+x0Black,ySphereBlk*radSphereBlack+y0Black,zSphereBlk*radSphereBlack+z0Black,'FaceAlpha',0.5,'FaceColor','c');
-hold off;
+surf(xSphereBlk*radSphereBlack+x0Black,ySphereBlk*radSphereBlack+y0Black,zSphereBlk*radSphereBlack+z0Black,F);
 
 % Example of a flat plane
 %hFloor = fill3([200 200 200 200], [-300 -300 300 300], [-300 300 300 -300], [0.7 0 0], 'facealpha', 0.3);
+
+hold off;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % set camera properties
