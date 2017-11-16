@@ -34,6 +34,7 @@ textureWall = (y >= s/2);
 % % find the normal force
 % x0WallTexture = [x s/2 z]; 
 % FNormalTexture = abs(-kWall * (posEE - x0WallTexture));
+% disp(FNormalTexture);
 % % Vary the constant with position 
 % % ////// Currently trying to figure how to change texture with position
 % cTexture = sin(norm(x+z)); 
@@ -44,12 +45,15 @@ textureWall = (y >= s/2);
 % left wall 
 % define when the viscous wall happens 
 viscousWall = (y <= -s/2); 
-% % find the normal force 
-% x0WallViscous = [x -s/2 z];
-% FNormalViscous = abs(-kWall * (posEE - x0WallViscous)); 
-% % find the F of viscous; 
-% cViscous = 32; 
-% Fviscous = - cViscous * cross(FNormalViscous,velocity); 
+% find thre position of the viscous wall 
+x0WallViscous = [x -s/2 z];
+% find the normal force 
+FNormalViscous = abs(-kWall * (posEE - x0WallViscous)); 
+% find the F of viscous; 
+cViscous = 32; 
+%find the force of the friction; 
+FFriction =  - cViscous * cross(FNormalViscous,velocity);
+Fviscous = FFriction + FNormalViscous; 
 
 %% Button 
 % top right of back wall 
@@ -98,7 +102,6 @@ massBall = 100;
 %find the acceleration that the ball will move when the EE collides with
 %it.
 acceleration = FEEOnBall/massBall;
-
 
 
 %% Interaction of ball with spring flat wall 

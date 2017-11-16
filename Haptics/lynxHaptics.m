@@ -145,7 +145,7 @@ i = 0; frameSkip = 3; % plotting variable - set how often plot updates
 
 % define currPos and a prevSmoothVelocity so that we can find the velocity 
 currPos = 0; 
-prevSmoothVelocity = 0; 
+prevSmoothVelocity = [0,0,0]; 
 
 %% Star the control loop 
 while(1)
@@ -163,7 +163,7 @@ while(1)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %% Calculate the velocity using exponential moving average 
-    distance = norm(currPos - posEE); 
+    distance = (currPos - posEE); 
     weight = 0.90; 
     currentRawVelocity = distance/toc;
     velocity = weight * currentRawVelocity + (1-weight) * prevSmoothVelocity; 
