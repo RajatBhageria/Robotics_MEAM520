@@ -178,6 +178,7 @@ while(1)
     % Check for collisions with objects in the environment and compute the total force on the end effector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     F = computeForces(posEE,velocity,posOfBall);
+    disp(F); 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %% Plot Environment

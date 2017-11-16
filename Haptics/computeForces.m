@@ -23,7 +23,7 @@ z = posEE(3);
 % define when the flat wall happens
 x0Wall = [x y 0];
 % find the Force of the flat wall 
-kWall = 32;
+kWall = 12;
 springWall = (z <= 0); 
 FflatWall = -kWall * (posEE - x0Wall);
 
@@ -31,15 +31,15 @@ FflatWall = -kWall * (posEE - x0Wall);
 % right wall 
 % define when the texture wall happens 
 textureWall = (y >= s/2); 
-% % find the normal force
-% x0WallTexture = [x s/2 z]; 
-% FNormalTexture = abs(-kWall * (posEE - x0WallTexture));
-% disp(FNormalTexture);
-% % Vary the constant with position 
-% % ////// Currently trying to figure how to change texture with position
-% cTexture = sin(norm(x+z)); 
-% % Find the force of the textured wall 
-% Ftexture = - cTexture * cross(FNormalTexture,velocity); 
+% find the normal force
+x0WallTexture = [x s/2 z]; 
+FNormalTexture = -kWall * (posEE-x0WallTexture);
+% Vary the constant with position using the sin wave 
+cTexture = abs(sin(norm(x+z))); 
+% Find the force friction of the textured wall 
+FFricTexture = - cTexture * cross(FNormalTexture,velocity);  
+%find the total force by atdding with normal force 
+Ftexture = FFricTexture + FNormalTexture; 
 
 %% Viscous wall 
 % left wall 
