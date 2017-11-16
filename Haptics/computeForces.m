@@ -31,25 +31,25 @@ FflatWall = -kWall * (posEE - x0Wall);
 % right wall 
 % define when the texture wall happens 
 textureWall = (y >= s/2); 
-% find the normal force
-x0WallTexture = [x s/2 z]; 
-FNormalTexture = abs(-kWall * (posEE - x0WallTexture));
-% Vary the constant with position 
-% ////// Currently trying to figure how to change texture with position
-cTexture = sin(norm(x+z)); 
-% Find the force of the textured wall 
-Ftexture = - cTexture * cross(FNormalTexture,velocity); 
+% % find the normal force
+% x0WallTexture = [x s/2 z]; 
+% FNormalTexture = abs(-kWall * (posEE - x0WallTexture));
+% % Vary the constant with position 
+% % ////// Currently trying to figure how to change texture with position
+% cTexture = sin(norm(x+z)); 
+% % Find the force of the textured wall 
+% Ftexture = - cTexture * cross(FNormalTexture,velocity); 
 
 %% Viscous wall 
 % left wall 
 % define when the viscous wall happens 
 viscousWall = (y <= -s/2); 
-% find the normal force 
-x0WallViscous = [x -s/2 z];
-FNormalViscous = abs(-kWall * (posEE - x0WallViscous)); 
-% find the F of viscous; 
-cViscous = 32; 
-Fviscous = - cViscous * cross(FNormalViscous,velocity); 
+% % find the normal force 
+% x0WallViscous = [x -s/2 z];
+% FNormalViscous = abs(-kWall * (posEE - x0WallViscous)); 
+% % find the F of viscous; 
+% cViscous = 32; 
+% Fviscous = - cViscous * cross(FNormalViscous,velocity); 
 
 %% Button 
 % top right of back wall 
@@ -109,20 +109,18 @@ FfreeSpace = [0,0,0];
 %% Do the switch cases 
 F = [];
 
-switch (posEE)
-    case springWall
-        F = FflatWall;
-    case textureWall 
-        F = Ftexture; 
-    case viscousWall
-        F = Fviscous; 
-    case button
-        F = Fbutton; 
-    case blackHole; 
-        F = Fblackhole; 
-    otherwise %freespace 
-        F = FfreeSpace;
-        
+if (springWall)
+    F = FflatWall;
+elseif (textureWall)
+    F = Ftexture; 
+elseif (viscousWall)
+    F = Fviscous;
+elseif (button)
+    F = Fbutton; 
+elseif (blackHole)
+    F = Fblackhole;  
+else%freespace 
+    F = FfreeSpace;
 end 
 
 %F needs to be a 3x1 vector not a 1x3 vector

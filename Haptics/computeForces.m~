@@ -8,10 +8,11 @@ function F = computeForces(posEE,velocity,posOfBall)
 global s; 
 global radCylinder;
 global heightButton; 
-global radSphere; 
-global x0Sphere;
-global y0Sphere;
-global z0Sphere; 
+global x0Black; 
+global y0Black; 
+global z0Black; 
+global radSphereBlack; 
+global radBall; 
 
 x = posEE(1); 
 y = posEE(2); 
@@ -27,28 +28,28 @@ springWall = (z <= 0);
 FflatWall = -kWall * (posEE - x0Wall);
 
 %% Texture wall 
-% right wall 
-% define when the texture wall happens 
-textureWall = (y >= s/2); 
-% find the normal force
-x0WallTexture = [x s/2 z]; 
-FNormalTexture = abs(-kWall * (posEE - x0WallTexture));
-% Vary the constant with position 
-% ////// Currently trying to figure how to change texture with position
-cTexture = sin(norm(x+z)); 
-% Find the force of the textured wall 
-Ftexture = - cTexture * cross(FNormalTexture,velocity); 
+% % right wall 
+% % define when the texture wall happens 
+% textureWall = (y >= s/2); 
+% % find the normal force
+% x0WallTexture = [x s/2 z]; 
+% FNormalTexture = abs(-kWall * (posEE - x0WallTexture));
+% % Vary the constant with position 
+% % ////// Currently trying to figure how to change texture with position
+% cTexture = sin(norm(x+z)); 
+% % Find the force of the textured wall 
+% Ftexture = - cTexture * cross(FNormalTexture,velocity); 
 
 %% Viscous wall 
-% left wall 
-% define when the viscous wall happens 
-viscousWall = (y <= -s/2); 
-% find the normal force 
-x0WallViscous = [x -s/2 z];
-FNormalViscous = abs(-kWall * (posEE - x0WallViscous)); 
-% find the F of viscous; 
-cViscous = 32; 
-Fviscous = - cViscous * cross(FNormalViscous,velocity); 
+% % left wall 
+% % define when the viscous wall happens 
+% viscousWall = (y <= -s/2); 
+% % find the normal force 
+% x0WallViscous = [x -s/2 z];
+% FNormalViscous = abs(-kWall * (posEE - x0WallViscous)); 
+% % find the F of viscous; 
+% cViscous = 32; 
+% Fviscous = - cViscous * cross(FNormalViscous,velocity); 
 
 %% Button 
 % top right of back wall 
@@ -66,15 +67,39 @@ button = withinY && withinZ && withinX;
 %Fbutton =;
 
 %% Black hole 
-global x0Sphere;
-global y0Sphere;
-global z0Sphere; 
 % top left of back wall
-blackHole = (x-x0Sphere)^2+(y-y0Sphere)^2 + (
+blackHole = ((x-x0Black)^2+(y-y0Black)^2 + (z-z0Black)^2) <= (radSphereBlack)^2; 
+
 % define when the black hole happens
-%FblackHole = ;
+%FblackHole = 0; 
 
 %% Ball 
+%choose spring constant for the ball
+kBall = 32;
+
+%find the distance into the ball that the EE is located. 
+%Or the distance between the surface and the EE 
+distanceFromCenter = ((x-posOfBall(1))^2+(y-posOfBall(2))^2 + (z-posOfBall(3))^2)^.5; 
+distInSurface = (radBall - distanceFromCenter); 
+
+%find the force
+Fball = [0,0,0];
+% if the EE within the surface of the ball
+if (distInSurface > 0)
+    Fball = -kBall*distInSurface;
+end 
+
+%simulate ball movement 
+FEEOnBall = - Fball; 
+
+%define virtual mass 
+massBall = 100; 
+
+%find the acceleration that the ball will move when the EE collides with
+%it.
+acceleration = FEEOnBall/massBall;
+
+
 
 %% Interaction of ball with spring flat wall 
 
@@ -84,15 +109,28 @@ FfreeSpace = [0,0,0];
 %% Do the switch cases 
 F = [];
 
-switch (posEE)
-    case springWall
-        F = FflatWall;
-    case textureWall 
-        F = Ftexture; 
-    case viscousWall
-        F = Fviscous; 
+switch (string) 
+    case "hello" 
+    case "hola"
+
+if (springWall)
+    F = FflatWall;
+elseif (textureWall)
+    F = Ftexture; 
+elseif viscousWall
+    F = Fviscous;
+elseif button
+    F = Fbutton; 
+elseif blackHole
+    F = Fblackhole;  
+else%freespace 
+    F = FfreeSpace;
+end 
+
     case button
-        F = Fbutton; 
+        
+    case blackHole; 
+        F = Fblackhole; 
     otherwise %freespace 
         F = FfreeSpace;
         

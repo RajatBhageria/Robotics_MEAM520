@@ -11,6 +11,7 @@ global qs % configuration (NOTE: This is only 3 angles now)
 global posEE % position of end effectr
 
 figClosed = 0;
+
 qs = [0,0,0]; % initialize robot to zero pose
 posEE = [0,0,0];  % initialize position of end effector
 
@@ -106,8 +107,8 @@ radBall = s/10;
 x0Ball = s/2; 
 y0Ball = 2*s/5; 
 z0Ball = 2*s/5; 
-[xSphere,ySphere,zSphere] = sphere(radSphere); 
-surf(xSphere*radSphere+x0Sphere,ySphere*radSphere+y0Sphere,zSphere*radSphere+z0Sphere,'FaceColor','m');
+[xSphere,ySphere,zSphere] = sphere(radBall); 
+surf(xSphere*radBall+x0Ball,ySphere*radBall+y0Ball,zSphere*radBall+z0Ball,'FaceColor','m');
 hold on; 
 
 posOfBall = [x0Ball,y0Ball,z0Ball];
@@ -127,7 +128,7 @@ scatter3(x0Black,y0Black,z0Black, s/15,'black');hold on;
 % create the sphere for the black hole 
 radSphereBlack = s/10; 
 posOfBlackHole = [x0Black, y0Black, z0Black];
-[xSphereBlk,ySphereBlk,zSphereBlk] = sphere(radSphere); 
+[xSphereBlk,ySphereBlk,zSphereBlk] = sphere(radSphereBlack); 
 surf(xSphereBlk*radSphereBlack+x0Black,ySphereBlk*radSphereBlack+y0Black,zSphereBlk*radSphereBlack+z0Black,'FaceAlpha',0.5,'FaceColor','c');
 hold off;
 
