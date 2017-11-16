@@ -3,7 +3,8 @@
 
 function F = computeForces(posEE,velocity,posOfBall)
 % @param: velocity is a 1x3 vector of velocities in the x y and z
-% directions 
+% @param: posEE is a 1x3 vector of positions of the end effector  
+% @param: posOfBall is a 1x3 vector of the position of the ball
 
 global s; 
 global radCylinder;
@@ -14,6 +15,7 @@ global z0Black;
 global radSphereBlack; 
 global radBall; 
 
+%% instantiate the positions of the end effectors 
 x = posEE(1); 
 y = posEE(2); 
 z = posEE(3); 
@@ -56,20 +58,36 @@ FFriction =  - cViscous * cross(FNormalViscous,velocity);
 Fviscous = FFriction + FNormalViscous; 
 
 %% Button 
+%to reach: 6 key strokes up for joint 2, 6 key strokes down joint 3, use
+%joint 1 to push button. 
 % top right of back wall 
 % define when the button happens 
-
-%face of the button (square######delete!!!!)
+%face of the button 
 withinY = (y < s/4 + radCylinder && y > s/4 - radCylinder); 
-%face of the button (square######delete!!!!)
+%face of the button 
 withinZ = (z < 3*s/4 + radCylinder && z > 3*s/4 - radCylinder); 
 %height of the button 
 withinX = (x > 0 && x < heightButton); 
 button = withinY && withinZ && withinX; 
 
 %find the force of the button 
-%Fbutton =;
+kPressing = kWall/2; 
+kPressed = kWall; 
+Fbutton =[0,0,0];
 
+%find the distance you're pressing 
+distPressing = posEE-[heightButton, y, z]; 
+%pressing button
+if (x > heightButton/2 && x <= heightButton)
+    Fbutton = - kPressing * (distPressing); 
+%force is zero 
+elseif (x > heightButton/4 && x <= heightButton/2) 
+    Fbutton = [0,0,0];
+%higher force
+elseif (x <  heightButton/4)
+    Fbutton = - kPressed * (distPressing); 
+end
+        
 %% Black hole 
 % top left of back wall
 blackHole = ((x-x0Black)^2+(y-y0Black)^2 + (z-z0Black)^2) <= (radSphereBlack)^2; 

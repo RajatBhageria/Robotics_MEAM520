@@ -3,7 +3,7 @@
 
 function F = computeForces(posEE,velocity,posOfBall)
 % @param: velocity is a 1x3 vector of velocities in the x y and z
-% directions 
+% @param: velocity is a 1x3 vector of velocities in the x y and z
 
 global s; 
 global radCylinder;
@@ -14,6 +14,7 @@ global z0Black;
 global radSphereBlack; 
 global radBall; 
 
+%% instantiate the positions of the end effectors 
 x = posEE(1); 
 y = posEE(2); 
 z = posEE(3); 
@@ -23,33 +24,37 @@ z = posEE(3);
 % define when the flat wall happens
 x0Wall = [x y 0];
 % find the Force of the flat wall 
-kWall = 32;
+kWall = 12;
 springWall = (z <= 0); 
 FflatWall = -kWall * (posEE - x0Wall);
 
 %% Texture wall 
-% % right wall 
-% % define when the texture wall happens 
-% textureWall = (y >= s/2); 
-% % find the normal force
-% x0WallTexture = [x s/2 z]; 
-% FNormalTexture = abs(-kWall * (posEE - x0WallTexture));
-% % Vary the constant with position 
-% % ////// Currently trying to figure how to change texture with position
-% cTexture = sin(norm(x+z)); 
-% % Find the force of the textured wall 
-% Ftexture = - cTexture * cross(FNormalTexture,velocity); 
+% right wall 
+% define when the texture wall happens 
+textureWall = (y >= s/2); 
+% find the normal force
+x0WallTexture = [x s/2 z]; 
+FNormalTexture = -kWall * (posEE-x0WallTexture);
+% Vary the constant with position using the sin wave 
+cTexture = abs(sin(norm(x+z))); 
+% Find the force friction of the textured wall 
+FFricTexture = - cTexture * cross(FNormalTexture,velocity);  
+%find the total force by atdding with normal force 
+Ftexture = FFricTexture + FNormalTexture; 
 
 %% Viscous wall 
-% % left wall 
-% % define when the viscous wall happens 
-% viscousWall = (y <= -s/2); 
-% % find the normal force 
-% x0WallViscous = [x -s/2 z];
-% FNormalViscous = abs(-kWall * (posEE - x0WallViscous)); 
-% % find the F of viscous; 
-% cViscous = 32; 
-% Fviscous = - cViscous * cross(FNormalViscous,velocity); 
+% left wall 
+% define when the viscous wall happens 
+viscousWall = (y <= -s/2); 
+% find thre position of the viscous wall 
+x0WallViscous = [x -s/2 z];
+% find the normal force 
+FNormalViscous = abs(-kWall * (posEE - x0WallViscous)); 
+% find the F of viscous; 
+cViscous = 32; 
+%find the force of the friction; 
+FFriction =  - cViscous * cross(FNormalViscous,velocity);
+Fviscous = FFriction + FNormalViscous; 
 
 %% Button 
 % top right of back wall 
@@ -100,7 +105,6 @@ massBall = 100;
 acceleration = FEEOnBall/massBall;
 
 
-
 %% Interaction of ball with spring flat wall 
 
 %% Free space 
@@ -109,31 +113,18 @@ FfreeSpace = [0,0,0];
 %% Do the switch cases 
 F = [];
 
-switch (string) 
-    case "hello" 
-    case "hola"
-
 if (springWall)
     F = FflatWall;
 elseif (textureWall)
     F = Ftexture; 
-elseif viscousWall
+elseif (viscousWall)
     F = Fviscous;
-elseif button
+elseif (button)
     F = Fbutton; 
-elseif blackHole
+elseif (blackHole)
     F = Fblackhole;  
 else%freespace 
     F = FfreeSpace;
-end 
-
-    case button
-        
-    case blackHole; 
-        F = Fblackhole; 
-    otherwise %freespace 
-        F = FfreeSpace;
-        
 end 
 
 %F needs to be a 3x1 vector not a 1x3 vector
