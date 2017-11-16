@@ -6,12 +6,17 @@ function F = computeForces(posEE,velocity,posOfBall)
 % directions 
 
 global s; 
+global radCylinder;
+global heightButton; 
+global x0Black; 
+global y0Black; 
+global z0Black; 
+global radSphereBlack; 
+global radBall; 
+
 x = posEE(1); 
 y = posEE(2); 
 z = posEE(3); 
-
-%% Free space 
-
 
 %% Spring flat wall 
 % Floor 
@@ -21,10 +26,6 @@ x0Wall = [x y 0];
 kWall = 32;
 springWall = (z <= 0); 
 FflatWall = -kWall * (posEE - x0Wall);
-
-%% Ball 
-
-%% Interaction of ball with spring flat wall 
 
 %% Texture wall 
 % right wall 
@@ -52,10 +53,58 @@ Fviscous = - cViscous * cross(FNormalViscous,velocity);
 
 %% Button 
 % top right of back wall 
+% define when the button happens 
 
+%face of the button (square######delete!!!!)
+withinY = (y < s/4 + radCylinder && y > s/4 - radCylinder); 
+%face of the button (square######delete!!!!)
+withinZ = (z < 3*s/4 + radCylinder && z > 3*s/4 - radCylinder); 
+%height of the button 
+withinX = (x > 0 && x < heightButton); 
+button = withinY && withinZ && withinX; 
+
+%find the force of the button 
+%Fbutton =;
 
 %% Black hole 
-% top left of back wall 
+% top left of back wall
+blackHole = ((x-x0Black)^2+(y-y0Black)^2 + (z-z0Black)^2) <= (radSphereBlack)^2; 
+
+% define when the black hole happens
+%FblackHole = 0; 
+
+%% Ball 
+%choose spring constant for the ball
+kBall = 32;
+
+%find the distance into the ball that the EE is located. 
+%Or the distance between the surface and the EE 
+distanceFromCenter = ((x-posOfBall(1))^2+(y-posOfBall(2))^2 + (z-posOfBall(3))^2)^.5; 
+distInSurface = (radBall - distanceFromCenter); 
+
+%find the force
+Fball = [0,0,0];
+% if the EE within the surface of the ball
+if (distInSurface > 0)
+    Fball = -kBall*distInSurface;
+end 
+
+%simulate ball movement 
+FEEOnBall = - Fball; 
+
+%define virtual mass 
+massBall = 100; 
+
+%find the acceleration that the ball will move when the EE collides with
+%it.
+acceleration = FEEOnBall/massBall;
+
+
+
+%% Interaction of ball with spring flat wall 
+
+%% Free space 
+FfreeSpace = [0,0,0];
 
 %% Do the switch cases 
 F = [];
@@ -67,10 +116,16 @@ switch (posEE)
         F = Ftexture; 
     case viscousWall
         F = Fviscous; 
+    case button
+        F = Fbutton; 
+    case blackHole; 
+        F = Fblackhole; 
     otherwise %freespace 
+        F = FfreeSpace;
         
 end 
 
 %F needs to be a 3x1 vector not a 1x3 vector
-F = F'
+F = F';
+
 end

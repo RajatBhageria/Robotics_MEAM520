@@ -6,12 +6,16 @@ function F = computeForces(posEE,velocity,posOfBall)
 % directions 
 
 global s; 
+global radCylinder;
+global heightButton; 
+global radSphere; 
+global x0Sphere;
+global y0Sphere;
+global z0Sphere; 
+
 x = posEE(1); 
 y = posEE(2); 
 z = posEE(3); 
-
-%% Free space 
-
 
 %% Spring flat wall 
 % Floor 
@@ -22,20 +26,18 @@ kWall = 32;
 springWall = (z <= 0); 
 FflatWall = -kWall * (posEE - x0Wall);
 
-%% Ball 
-
-%% Interaction of ball with spring flat wall 
-
 %% Texture wall 
 % right wall 
 % define when the texture wall happens 
 textureWall = (y >= s/2); 
 % find the normal force
 x0WallTexture = [x s/2 z]; 
-FNormal = abs(-kWall * (posEE - x0WallTexture));
+FNormalTexture = abs(-kWall * (posEE - x0WallTexture));
 % Vary the constant with position 
-cTexture = 2; 
-Ftexture = ; 
+% ////// Currently trying to figure how to change texture with position
+cTexture = sin(norm(x+z)); 
+% Find the force of the textured wall 
+Ftexture = - cTexture * cross(FNormalTexture,velocity); 
 
 %% Viscous wall 
 % left wall 
@@ -43,17 +45,41 @@ Ftexture = ;
 viscousWall = (y <= -s/2); 
 % find the normal force 
 x0WallViscous = [x -s/2 z];
-FNormal = abs(-kWall * (posEE - x0WallViscous)); 
+FNormalViscous = abs(-kWall * (posEE - x0WallViscous)); 
 % find the F of viscous; 
 cViscous = 32; 
-Fviscous = - cViscous * cross(FNormal,velocity); 
+Fviscous = - cViscous * cross(FNormalViscous,velocity); 
 
 %% Button 
 % top right of back wall 
+% define when the button happens 
 
+%face of the button (square######delete!!!!)
+withinY = (y < s/4 + radCylinder && y > s/4 - radCylinder); 
+%face of the button (square######delete!!!!)
+withinZ = (z < 3*s/4 + radCylinder && z > 3*s/4 - radCylinder); 
+%height of the button 
+withinX = (x > 0 && x < heightButton); 
+button = withinY && withinZ && withinX; 
+
+%find the force of the button 
+%Fbutton =;
 
 %% Black hole 
-% top left of back wall 
+global x0Sphere;
+global y0Sphere;
+global z0Sphere; 
+% top left of back wall
+blackHole = (x-x0Sphere)^2+(y-y0Sphere)^2 + (
+% define when the black hole happens
+%FblackHole = ;
+
+%% Ball 
+
+%% Interaction of ball with spring flat wall 
+
+%% Free space 
+FfreeSpace = [0,0,0];
 
 %% Do the switch cases 
 F = [];
@@ -62,13 +88,17 @@ switch (posEE)
     case springWall
         F = FflatWall;
     case textureWall 
-        F =
+        F = Ftexture; 
     case viscousWall
         F = Fviscous; 
+    case button
+        F = Fbutton; 
     otherwise %freespace 
+        F = FfreeSpace;
         
 end 
 
 %F needs to be a 3x1 vector not a 1x3 vector
-F = F'
+F = F';
+
 end

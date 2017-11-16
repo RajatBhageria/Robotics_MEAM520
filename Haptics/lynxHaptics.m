@@ -81,53 +81,62 @@ xlabel('x'); ylabel('y'); zlabel('z');
 
 %% Create button on the back wall 
 %Create the cylinder 
+global radCylinder;
+global heightButton; 
 radCylinder = s/10; 
 xBase = 0; 
 yBase = s/4; 
 zBase = 3*s/4; 
-height = s/8; 
+heightButton = s/8; 
 [X,Y,Z] = cylinder(radCylinder);
-surf(Z*height+xBase,Y+yBase,X+zBase,'FaceColor','red'); 
+surf(Z*heightButton+xBase,Y+yBase,X+zBase,'FaceColor','red'); 
 hold on; 
 
 %Create a circular button head 
 theta=-pi:0.01:pi;
 z=zBase + radCylinder*cos(theta);
-x=xBase + height + zeros(1,numel(z)); 
+x=xBase + heightButton + zeros(1,numel(z)); 
 y=yBase + radCylinder*sin(theta);
 patch(x,y,z,'red');
 hold on; 
 
-%% Create a sphere
-radSphere = s/10; 
-x0 = s/2; 
-y0 = 2*s/5; 
-z0 = 2*s/5; 
+%% Create a ball 
+global radBall; 
+radBall = s/10; 
+x0Ball = s/2; 
+y0Ball = 2*s/5; 
+z0Ball = 2*s/5; 
 [xSphere,ySphere,zSphere] = sphere(radSphere); 
-surf(xSphere*radSphere+x0,ySphere*radSphere+y0,zSphere*radSphere+z0,'FaceColor','m');
+surf(xSphere*radSphere+x0Sphere,ySphere*radSphere+y0Sphere,zSphere*radSphere+z0Sphere,'FaceColor','m');
 hold on; 
+
+posOfBall = [x0Ball,y0Ball,z0Ball];
 
 %% Black hole 
-% make the point 
-xPoint = 0; 
-yPoint = -s/4; 
-zPoint = 3*s/4; 
-scatter3(xPoint,yPoint,zPoint, s/15,'black');
-hold on; 
+global x0Black; 
+global y0Black; 
+global z0Black; 
+global radSphereBlack; 
 
-radSphereBlack = s/10; 
+% make the point 
 x0Black = 0; 
 y0Black = -s/4; 
 z0Black = 3*s/4; 
+scatter3(x0Black,y0Black,z0Black, s/15,'black');hold on; 
+
+% create the sphere for the black hole 
+radSphereBlack = s/10; 
+posOfBlackHole = [x0Black, y0Black, z0Black];
 [xSphereBlk,ySphereBlk,zSphereBlk] = sphere(radSphere); 
 surf(xSphereBlk*radSphereBlack+x0Black,ySphereBlk*radSphereBlack+y0Black,zSphereBlk*radSphereBlack+z0Black,'FaceAlpha',0.5,'FaceColor','c');
 hold off;
 
-% Example of a flat plane
+
+%% Example of a flat plane
 %hFloor = fill3([200 200 200 200], [-300 -300 300 300], [-300 300 300 -300], [0.7 0 0], 'facealpha', 0.3);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% set camera properties
+%% set camera properties
 axis([-s s -s*1 s*1 -s*1 s*1]);
 view([75,30]);
 
@@ -167,7 +176,7 @@ while(1)
     %% Calculate desired force based on current end effector position
     % Check for collisions with objects in the environment and compute the total force on the end effector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    F = computeForces(posEE,velocity);
+    F = computeForces(posEE,velocity,posOfBall);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %% Plot Environment
