@@ -1,7 +1,7 @@
 % Check for collisions with objects in the environment and compute the
 % total force on the end effector
 
-function F = computeForces(posEE,velocity,posOfBall)
+function F = computeForces(posEE,velocity)
 % @param: velocity is a 1x3 vector of velocities in the x y and z
 % @param: posEE is a 1x3 vector of positions of the end effector  
 % @param: posOfBall is a 1x3 vector of the position of the ball
@@ -14,6 +14,8 @@ global y0Black;
 global z0Black; 
 global radSphereBlack; 
 global radBall; 
+global posOfBall;
+global interval;
 
 %% instantiate the positions of the end effectors 
 x = posEE(1); 
@@ -58,7 +60,7 @@ FFriction =  - cViscous * cross(FNormalViscous,velocity);
 Fviscous = FFriction + FNormalViscous; 
 
 %% Button 
-%to reach: 6 key strokes up for joint 2, 6 key strokes down joint 3, use
+%to reach: 6 key "s" joint 2, 6 key "e" joint 3, use
 %joint 1 to push button. 
 % top right of back wall 
 % define when the button happens 
@@ -90,36 +92,44 @@ end
         
 %% Black hole 
 % top left of back wall
-blackHole = ((x-x0Black)^2+(y-y0Black)^2 + (z-z0Black)^2) <= (radSphereBlack)^2; 
+blackhole = ((x-x0Black)^2+(y-y0Black)^2 + (z-z0Black)^2) <= (radSphereBlack)^2; 
 
-% define when the black hole happens
-%FblackHole = 0; 
+kBlackhole = 5;
+distFromCenter = norm([x0Black y0Black z0Black] - posEE);
+distFromSurface = radSphereBlack - distFromCenter;
+directionToCenter = ([x0Black y0Black z0Black] - posEE)/distFromCenter;
+
+% Force of blackhole
+Fblackhole = kBlackhole * distFromSurface * directionToCenter;
 
 %% Ball 
 %choose spring constant for the ball
-kBall = 32;
+kBall = 10;
+
+ball = ((x-posOfBall(1))^2+(y-posOfBall(2))^2 + (z-posOfBall(3))^2) <= (radBall)^2;
 
 %find the distance into the ball that the EE is located. 
 %Or the distance between the surface and the EE 
-distanceFromCenter = ((x-posOfBall(1))^2+(y-posOfBall(2))^2 + (z-posOfBall(3))^2)^.5; 
-distInSurface = (radBall - distanceFromCenter); 
+distFromBallCenter = norm(posOfBall - posEE);
+distFromBallSurface = abs(radBall - distFromBallCenter);
+dirToBallCenter = (posOfBall-posEE)/distFromBallCenter;
 
-%find the force
-Fball = [0,0,0];
-% if the EE within the surface of the ball
-if (distInSurface > 0)
-    Fball = -kBall*distInSurface;
+if (ball)
+    % Force of the ball
+    Fball = -kBall * distFromBallSurface * dirToBallCenter;
+
+    %simulate ball movement 
+    FEEOnBall = - Fball; 
+
+    %define virtual mass 
+    massBall = 5; 
+
+    %find the acceleration that the ball will move when the EE collides with
+    %it.
+    accelBall = FEEOnBall/massBall;
+
+    posOfBall = posOfBall + 2*accelBall*interval;
 end 
-
-%simulate ball movement 
-FEEOnBall = - Fball; 
-
-%define virtual mass 
-massBall = 100; 
-
-%find the acceleration that the ball will move when the EE collides with
-%it.
-acceleration = FEEOnBall/massBall;
 
 
 %% Interaction of ball with spring flat wall 
@@ -131,16 +141,25 @@ FfreeSpace = [0,0,0];
 F = [];
 
 if (springWall)
+    disp('springWall');
     F = FflatWall;
 elseif (textureWall)
+    disp('texturewall');
     F = Ftexture; 
 elseif (viscousWall)
+    disp('viscouswall');
     F = Fviscous;
 elseif (button)
+    disp('button');
     F = Fbutton; 
-elseif (blackHole)
+elseif (blackhole)
+    disp('blackhole');
     F = Fblackhole;  
+elseif (ball)
+    disp('ball');
+    F = Fball;
 else%freespace 
+    disp('freespace');
     F = FfreeSpace;
 end 
 

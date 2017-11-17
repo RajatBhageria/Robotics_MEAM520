@@ -6,6 +6,10 @@ close all
 %% Run on hardware or simulation
 hardwareFlag = false;
 
+%% Define global time increment
+global interval;
+interval = 0.0001;
+
 %% Plot end effector in environment
 global qs % configuration (NOTE: This is only 3 angles now)
 global posEE % position of end effectr
@@ -103,6 +107,8 @@ hold on;
 
 %% Create a ball 
 global radBall; 
+global posOfBall;
+
 radBall = s/10; 
 x0Ball = s/2; 
 y0Ball = 2*s/5; 
@@ -165,7 +171,7 @@ while(1)
     %% Calculate the velocity using exponential moving average 
     distance = (currPos - posEE); 
     weight = 0.90; 
-    currentRawVelocity = distance/toc;
+    currentRawVelocity = distance/interval;
     velocity = weight * currentRawVelocity + (1-weight) * prevSmoothVelocity; 
     
     % set the global pos of the EE to the current position 
@@ -177,7 +183,7 @@ while(1)
     %% Calculate desired force based on current end effector position
     % Check for collisions with objects in the environment and compute the total force on the end effector
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    F = computeForces(posEE,velocity,posOfBall);
+    F = computeForces(posEE,velocity);
     disp(F); 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
@@ -188,6 +194,10 @@ while(1)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Set handles for interactive objects you make here
         
+        % Redraw the ball
+%         [xSphere,ySphere,zSphere] = sphere(radBall); 
+%         surf(xSphere*radBall+posOfBall(1),ySphere*radBall+posOfBall(2),zSphere*radBall+posOfBall(3),'FaceColor','m');
+%         hold on
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		
         drawnow
@@ -215,4 +225,7 @@ while(1)
     %% Debugging
     %[posEE, qs, F', Tau']
     i = mod(i+1, frameSkip);
+    
+    interval = toc;
+    disp(interval);
 end
