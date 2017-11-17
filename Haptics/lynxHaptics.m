@@ -20,7 +20,7 @@ qs = [0,0,0]; % initialize robot to zero pose
 posEE = [0,0,0];  % initialize position of end effector
 
 hold on; scatter3(0, 0, 0, 'kx', 'Linewidth', 1); % plot origin
-h1 = scatter3(0, 0, 0, 500,'r.'); % plot end effector position
+h1 = scatter3(0, 0, 0, 500,'b.'); % plot end effector position
 h2 = quiver3(0, 0, 0, 0, 0, 0, 'b'); % plot output force
 if ~hardwareFlag
     h_fig = figure(1);
@@ -92,7 +92,7 @@ radCylinder = s/10;
 xBase = 0; 
 yBase = s/4; 
 zBase = 3*s/4; 
-heightButton = s/8; 
+heightButton = s/60; 
 [X,Y,Z] = cylinder(radCylinder);
 surf(Z*heightButton+xBase,Y+yBase,X+zBase,'FaceColor','red'); 
 hold on; 
@@ -114,9 +114,8 @@ x0Ball = s/2;
 y0Ball = 2*s/5; 
 z0Ball = 2*s/5; 
 [xSphere,ySphere,zSphere] = sphere(radBall); 
-surf(xSphere*radBall+x0Ball,ySphere*radBall+y0Ball,zSphere*radBall+z0Ball,'FaceColor','m');
+surface = surf(xSphere*radBall+x0Ball,ySphere*radBall+y0Ball,zSphere*radBall+z0Ball,'FaceColor','m');
 hold on; 
-
 posOfBall = [x0Ball,y0Ball,z0Ball];
 
 %% Black hole 
@@ -125,9 +124,9 @@ global y0Black;
 global z0Black; 
 global radSphereBlack; 
 
-% make the point 
+% make the point of attraction. 
 x0Black = 0; 
-y0Black = -s/4; 
+y0Black = -1*s/4; 
 z0Black = 3*s/4; 
 scatter3(x0Black,y0Black,z0Black, s/15,'black');hold on; 
 
@@ -137,11 +136,6 @@ posOfBlackHole = [x0Black, y0Black, z0Black];
 [xSphereBlk,ySphereBlk,zSphereBlk] = sphere(radSphereBlack); 
 surf(xSphereBlk*radSphereBlack+x0Black,ySphereBlk*radSphereBlack+y0Black,zSphereBlk*radSphereBlack+z0Black,'FaceAlpha',0.5,'FaceColor','c');
 hold off;
-
-
-%% Example of a flat plane
-%hFloor = fill3([200 200 200 200], [-300 -300 300 300], [-300 300 300 -300], [0.7 0 0], 'facealpha', 0.3);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% set camera properties
 axis([-s s -s*1 s*1 -s*1 s*1]);
@@ -192,12 +186,10 @@ while(1)
         figClosed = drawLynx(h1, h2, F);
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % Set handles for interactive objects you make here
-        
-        % Redraw the ball
-%         [xSphere,ySphere,zSphere] = sphere(radBall); 
-%         surf(xSphere*radBall+posOfBall(1),ySphere*radBall+posOfBall(2),zSphere*radBall+posOfBall(3),'FaceColor','m');
-%         hold on
+        % Set handles for the ball moving position when the EE touches it 
+        surface.XData = xSphere*radBall+posOfBall(1);
+        surface.YData = ySphere*radBall+posOfBall(2);
+        surface.ZData = zSphere*radBall+posOfBall(3);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		
         drawnow
