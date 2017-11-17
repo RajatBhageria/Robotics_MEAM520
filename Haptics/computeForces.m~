@@ -18,16 +18,16 @@ global posOfBall;
 global interval;
 
 %% instantiate the positions of the end effectors 
-x = posEE(1); %mm
-y = posEE(2); %mm
-z = posEE(3); %mm
+x = posEE(1); //mm
+y = posEE(2); 
+z = posEE(3); 
 
 %% Spring flat wall 
 % Floor 
 % define when the flat wall happens
 x0Wall = [x y 0];
 % find the Force of the flat wall 
-kWall = 12; %mm/s^2
+kWall = 12; %
 springWall = (z <= 0); 
 FflatWall = -kWall * (posEE - x0Wall);
 
@@ -39,7 +39,7 @@ textureWall = (y >= s/2);
 x0WallTexture = [x s/2 z]; 
 FNormalTexture = -kWall * (posEE-x0WallTexture);
 % Vary the constant with position using the sin wave 
-cTexture = abs(sin(norm(x+z))); %s/mm
+cTexture = abs(sin(norm(x+z))); 
 % Find the force friction of the textured wall 
 FFricTexture = - cTexture * cross(FNormalTexture,velocity);  
 %find the total force by atdding with normal force 
@@ -54,7 +54,7 @@ x0WallViscous = [x -s/2 z];
 % find the normal force 
 FNormalViscous = abs(-kWall * (posEE - x0WallViscous)); 
 % find the F of viscous; 
-cViscous = 32; %s/mm
+cViscous = 32; 
 %find the force of the friction; 
 FFriction =  - cViscous * cross(FNormalViscous,velocity);
 Fviscous = FFriction + FNormalViscous; 
@@ -73,8 +73,8 @@ withinX = (x > 0 && x < heightButton);
 button = withinY && withinZ && withinX; 
 
 %find the force of the button 
-kPressing = kWall/2; %mm/s^2
-kPressed = kWall; %mm/s^2
+kPressing = kWall/2; 
+kPressed = kWall; 
 Fbutton =[0,0,0];
 
 %find the distance you're pressing 
@@ -94,7 +94,7 @@ end
 % top left of back wall
 blackhole = ((x-x0Black)^2+(y-y0Black)^2 + (z-z0Black)^2) <= (radSphereBlack)^2; 
 
-kBlackhole = 5; %mm/s^2
+kBlackhole = 5;
 distFromCenter = norm([x0Black y0Black z0Black] - posEE);
 distFromSurface = radSphereBlack - distFromCenter;
 directionToCenter = ([x0Black y0Black z0Black] - posEE)/distFromCenter;
@@ -104,7 +104,7 @@ Fblackhole = kBlackhole * distFromSurface * directionToCenter;
 
 %% Ball 
 %choose spring constant for the ball
-kBall = 10; %mm/s^2
+kBall = 10;
 
 ball = ((x-posOfBall(1))^2+(y-posOfBall(2))^2 + (z-posOfBall(3))^2) <= (radBall)^2;
 
@@ -122,11 +122,11 @@ if (ball)
     FEEOnBall = - Fball; 
 
     %define virtual mass 
-    massBall = 5; %grams
+    massBall = 5; 
 
     %find the acceleration that the ball will move when the EE collides with
     %it.
-    accelBall = FEEOnBall/massBall; %mm/s^2
+    accelBall = FEEOnBall/massBall;
 
     posOfBall = posOfBall + 2*accelBall*interval;
 end 
